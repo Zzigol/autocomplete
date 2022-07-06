@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using NUnit.Framework;
 
 namespace Autocomplete
@@ -30,8 +31,19 @@ namespace Autocomplete
         /// <remarks>Эта функция должна работать за O(log(n) + count)</remarks>
         public static string[] GetTopByPrefix(IReadOnlyList<string> phrases, string prefix, int count)
         {
-            // тут стоит использовать написанный ранее класс LeftBorderTask
-            return null;
+            var list = new List<string>();
+            //string[] lines = new string[count];
+            var numberPrefix = LeftBorderTask.GetLeftBorderIndex(phrases, prefix, -1, phrases.Count) +1;
+            var number = RightBorderTask.GetRightBorderIndex(phrases, prefix, -1, phrases.Count) -
+                        LeftBorderTask.GetLeftBorderIndex(phrases, prefix, -1, phrases.Count) - 1;
+            if (number > count)
+                for (int i = numberPrefix, j=0; i < numberPrefix + count; i++, j++)
+                    list.Add(phrases[i]);
+                    
+            else
+                for (int i = numberPrefix, j = 0; i < numberPrefix + number; i++, j++)
+                    list.Add(phrases[i]);
+            return list.ToArray();
         }
 
         /// <returns>
@@ -39,8 +51,24 @@ namespace Autocomplete
         /// </returns>
         public static int GetCountByPrefix(IReadOnlyList<string> phrases, string prefix)
         {
-            // тут стоит использовать написанные ранее классы LeftBorderTask и RightBorderTask
-            return -1;
+            var number = 0;
+            if  (phrases.Contains(prefix))
+                    number = RightBorderTask.GetRightBorderIndex(phrases, prefix, -1, phrases.Count) -
+                        LeftBorderTask.GetLeftBorderIndex(phrases, prefix, -1, phrases.Count)-1;
+            else
+            {
+                foreach (var phrase in phrases)
+                {
+                    if (phrase.StartsWith(prefix))
+                    {
+                        number +=1;
+                    }
+
+                }
+            }
+            
+            
+            return number;
         }
     }
 
